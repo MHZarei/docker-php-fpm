@@ -2,7 +2,7 @@ FROM php:7.3-fpm
 
 ARG TIMEZONE
 
-MAINTAINER MHZarei <mhzarei@.com>
+LABEL author="MHZarei"
 
 RUN apt-get update && apt-get install -y \
     openssl \
@@ -44,3 +44,9 @@ RUN docker-php-ext-install gd
 
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-install zip
+
+
+RUN echo 'alias sf="php app/console"' >> ~/.bashrc \
+&& echo 'alias sf3="php bin/console"' >> ~/.bashrc
+
+WORKDIR /var/www/symfony
