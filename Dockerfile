@@ -54,7 +54,6 @@ RUN docker-php-ext-install gmp
 RUN docker-php-ext-configure mcrypt 
 RUN docker-php-ext-install mcrypt
 
-RUN echo extension=gmp.so > $PHP_INI_DIR/conf.d/gmp.ini
 RUN echo extension=mcrypt.so > $PHP_INI_DIR/conf.d/mcrypt.ini
 
 RUN echo 'alias sf="php app/console"' >> ~/.bashrc \
