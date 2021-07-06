@@ -5,6 +5,7 @@ ARG TIMEZONE
 LABEL author="MHZarei"
 
 RUN apt-get update && apt-get install -y \
+    nginx \
     openssl \
     git \
     unzip \
@@ -14,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libgmp-dev \
     libmcrypt-dev \
     nano
+
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -61,5 +63,21 @@ RUN echo 'alias sf="php app/console"' >> ~/.bashrc \
 
 WORKDIR /var/www/symfony
 
-# Expose the listening port
-EXPOSE 9000
+# setup nginx
+
+ADD nginx.conf /etc/nginx/
+ADD symfony.conf /etc/nginx/sites-available/
+
+RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony \
+&& rm /etc/nginx/sites-enabled/default
+
+RUN echo "upstream php-upstream { server localhost:9000; }" > /etc/nginx/conf.d/upstream.conf
+
+RUN usermod -u 1000 www-data
+
+CMD ["nginx"]
+
+EXPOSE 80
+EXPOSE 443
+
+
