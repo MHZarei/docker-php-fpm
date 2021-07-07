@@ -75,9 +75,9 @@ RUN echo "upstream php-upstream { server localhost:9000; }" > /etc/nginx/conf.d/
 
 RUN usermod -u 1000 www-data
 
-CMD ["nginx"]
+ADD ./start.sh /start.sh
+
+CMD ["/bin/bash", "/start.sh"]
 
 EXPOSE 80
 EXPOSE 443
-
-
