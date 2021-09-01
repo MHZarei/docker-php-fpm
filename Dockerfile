@@ -4,7 +4,8 @@ ARG TIMEZONE
 
 LABEL author="MHZarei"
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+RUN apt-get install -y \
     nginx \
     openssl \
     git \
@@ -13,7 +14,8 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libpng-dev \
     libgmp-dev \
-    libmcrypt-dev \
+    libmcrypt-dev \ 
+    libjpeg62-turbo-dev libjpeg-dev \
     nano
 
 
@@ -27,7 +29,7 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 && "date"
 
 # Type docker-php-ext-install to see available extensions
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install -j "$(nproc)" pdo pdo_mysql
 
 
 # install xdebug
@@ -42,16 +44,17 @@ RUN docker-php-ext-install pdo pdo_mysql
 # && echo "xdebug.remote_port=9001" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install intl
+RUN docker-php-ext-install -j "$(nproc)" intl
 
-RUN docker-php-ext-configure gd
-RUN docker-php-ext-install gd
+# RUN docker-php-ext-configure gd
+RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr  # --with-webp-dir=/usr # --with-freetype-dir=/usr 
+RUN docker-php-ext-install -j "$(nproc)" gd
 
 RUN docker-php-ext-configure zip
-RUN docker-php-ext-install zip
+RUN docker-php-ext-install -j "$(nproc)" zip
 
 RUN docker-php-ext-configure gmp 
-RUN docker-php-ext-install gmp
+RUN docker-php-ext-install -j "$(nproc)" gmp
 
 #RUN docker-php-ext-configure mcrypt 
 #RUN docker-php-ext-install mcrypt
