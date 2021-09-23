@@ -16,6 +16,7 @@ RUN apt-get install -y \
     libgmp-dev \
     libmcrypt-dev \ 
     libjpeg62-turbo-dev libjpeg-dev \
+    libxml2-dev \
     nano
 
 
@@ -56,6 +57,8 @@ RUN docker-php-ext-install -j "$(nproc)" zip
 RUN docker-php-ext-configure gmp 
 RUN docker-php-ext-install -j "$(nproc)" gmp
 
+RUN docker-php-ext-install soap
+
 #RUN docker-php-ext-configure mcrypt 
 #RUN docker-php-ext-install mcrypt
 
@@ -76,7 +79,7 @@ RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfo
 
 RUN echo "upstream php-upstream { server localhost:9000; }" > /etc/nginx/conf.d/upstream.conf
 
-RUN usermod -u 1000 www-data
+# RUN usermod -u 1000 www-data
 
 ADD ./start.sh /start.sh
 
