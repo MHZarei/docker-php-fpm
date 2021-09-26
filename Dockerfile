@@ -79,6 +79,8 @@ RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfo
 
 RUN echo "upstream php-upstream { server localhost:9000; }" > /etc/nginx/conf.d/upstream.conf
 
+RUN sed -i 's/CipherString/#CipherString/g' /etc/ssl/openssl.cnf
+
 # RUN usermod -u 1000 www-data
 
 ADD ./start.sh /start.sh
