@@ -50,6 +50,7 @@ RUN docker-php-ext-install -j "$(nproc)" intl
 # RUN docker-php-ext-configure gd
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr  # --with-webp-dir=/usr # --with-freetype-dir=/usr 
 RUN docker-php-ext-install -j "$(nproc)" gd
+RUN docker-php-ext-enable exif 
 
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-install -j "$(nproc)" zip
