@@ -4,18 +4,21 @@ ARG TIMEZONE
 
 LABEL author="MHZarei"
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+RUN apt-get install -y \
     nginx \
     openssl \
     git \
     unzip \
     libzip-dev \
     libicu-dev \
-    libpng-dev \
     libgmp-dev \
     libmcrypt-dev \
-    nano
-
+    libjpeg62-turbo-dev libjpeg-dev \
+    libxml2-dev \
+    nano \
+    ghostscript libfreetype6-dev libgd3 libgd-dev libpng-dev libjpeg-dev
+RUN rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -27,7 +30,7 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 && "date"
 
 # Type docker-php-ext-install to see available extensions
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install -j "$(nproc)" pdo pdo_mysql
 
 
 # install xdebug
@@ -42,19 +45,31 @@ RUN docker-php-ext-install pdo pdo_mysql
 # && echo "xdebug.remote_port=9001" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install intl
+RUN docker-php-ext-install -j "$(nproc)" intl
 
-RUN docker-php-ext-configure gd
-RUN docker-php-ext-install gd
+# RUN docker-php-ext-configure gd
+#RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr  # --with-webp-dir=/usr # --with-freetype-dir=/usr
+RUN docker-php-ext-configure gd \
+     --with-freetype-dir=/usr/include/freetype2 \
+     --with-png-dir=/usr/include \
+     --with-jpeg-dir=/usr/include
+#     --with-webp-dir=/usr/include
+
+RUN docker-php-ext-install -j "$(nproc)" gd
+RUN docker-php-ext-enable gd
 
 RUN docker-php-ext-configure zip
-RUN docker-php-ext-install zip
+RUN docker-php-ext-install -j "$(nproc)" zip
 
-RUN docker-php-ext-configure gmp 
-RUN docker-php-ext-install gmp
+RUN docker-php-ext-configure gmp
+RUN docker-php-ext-install -j "$(nproc)" gmp
 
-#RUN docker-php-ext-configure mcrypt 
+RUN docker-php-ext-install -j "$(nproc)" soap
+
+#RUN docker-php-ext-configure mcrypt
 #RUN docker-php-ext-install mcrypt
+RUN docker-php-ext-install iconv
+RUN docker-php-ext-install mbstring
 
 #RUN echo extension=mcrypt.so > $PHP_INI_DIR/conf.d/mcrypt.ini
 
@@ -73,7 +88,9 @@ RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfo
 
 RUN echo "upstream php-upstream { server localhost:9000; }" > /etc/nginx/conf.d/upstream.conf
 
-RUN usermod -u 1000 www-data
+RUN sed -i 's/CipherString/#CipherString/g' /etc/ssl/openssl.cnf
+
+# RUN usermod -u 1000 www-data
 
 ADD ./start.sh /start.sh
 
