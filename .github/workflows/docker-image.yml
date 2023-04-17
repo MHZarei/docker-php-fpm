@@ -14,7 +14,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag mhzarei/php-fpm:sym4
-    - name: push the Docker image
-      run: docker push mhzarei/php-fpm:sym4
+
+    - name: Push to Docker Hub
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: mhzarei/php-fpm:sym4
+        
+    # - name: push the Docker image
+    #   run: docker push mhzarei/php-fpm:sym4
