@@ -65,6 +65,8 @@ RUN docker-php-ext-install soap
 #RUN docker-php-ext-configure mcrypt 
 #RUN docker-php-ext-install mcrypt
 
+RUN pecl upgrade timezonedb
+
 #RUN echo extension=mcrypt.so > $PHP_INI_DIR/conf.d/mcrypt.ini
 
 RUN echo 'alias sf="php app/console"' >> ~/.bashrc \
