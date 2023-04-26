@@ -17,6 +17,7 @@ RUN apt-get install -y \
     libmcrypt-dev \ 
     libjpeg62-turbo-dev libjpeg-dev \
     libxml2-dev \
+    ghostscript libpng-dev libjpeg-dev libfreetype6-dev \
     nano
 
 
@@ -48,7 +49,7 @@ RUN docker-php-ext-configure intl
 RUN docker-php-ext-install -j "$(nproc)" intl
 
 # RUN docker-php-ext-configure gd
-RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr  # --with-webp-dir=/usr # --with-freetype-dir=/usr 
+RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr  --with-freetype-dir=/usr/include/freetype2 # --with-webp-dir=/usr # --with-freetype-dir=/usr 
 RUN docker-php-ext-install -j "$(nproc)" gd
 
 RUN docker-php-ext-configure exif
